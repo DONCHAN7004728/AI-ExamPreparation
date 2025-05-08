@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LoginPage</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #000;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+
+    body::before {
+      content: '';
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 10% 20%, #00ffe0, transparent 25%),
+                  radial-gradient(circle at 90% 80%, #0ff, transparent 20%),
+                  radial-gradient(circle at 50% 50%, #1de9b6, transparent 30%);
+      background-repeat: no-repeat;
+      animation: moveLights 20s linear infinite;
+      z-index: 0;
+      opacity: 0.2;
+    }
+
+    @keyframes moveLights {
+      0% { transform: translate(0%, 0%); }
+      50% { transform: translate(-25%, -25%); }
+      100% { transform: translate(0%, 0%); }
+    }
+
+    .card {
+      position: relative;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 255, 200, 0.2);
+      padding: 30px;
+      max-width: 600px;
+      width: 100%;
+      text-align: center;
+      color: #ffffff;
+      z-index: 1;
+    }
+
+    .card h1 {
+      font-size: 2rem;
+      margin-bottom: 15px;
+      color: #0fffd0;
+    }
+
+    .card p {
+      font-size: 1rem;
+      margin-bottom: 12px;
+      line-height: 1.6;
+      color: #ccc;
+    }
+
+    .card ul {
+      text-align: left;
+      margin: 20px 0;
+      padding-left: 20px;
+    }
+
+    .card ul li {
+      margin-bottom: 10px;
+      font-size: 1rem;
+      color: #eee;
+    }
+
+    .card .button-group {
+      display: flex;
+      justify-content: center;
+      gap: 100px;
+      margin-top: 20px;
+    }
+
+    .card .button {
+      padding: 13px 20px;
+      background: linear-gradient(135deg, #0fffd0, #0d9488);
+      color: #000;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .card .button:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Welcome to AI Exam Assistant</h1>
+    <p>Before you begin, please follow this steps:</p>
+    <ul>
+      <li>First <strong>OpenAI API key</strong> than login</li>
+    </ul>
+    <br>
+    <p>Why this login thing??</p>
+    <ul>
+      <li>It's for safety purpose :
+        <ul>
+          <li>
+            1. Secured for LogIN
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <button class="button" onclick="window.location.href='https://openai.com/index/openai-api/'">ProceedToLoginOpenAi</button>
+    <button class="button" onclick="window.location.href='/'">BackToHomePage</button>
+  </div>
+</body>
+</html>

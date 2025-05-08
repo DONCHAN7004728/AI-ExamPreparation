@@ -1,0 +1,145 @@
+/* Reset and Base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body, html {
+  height: 100%;
+  font-family: 'Segoe UI', sans-serif;
+  background: #000;
+  color: white;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ...........Animation body background........... */
+body::before {
+  content: '';
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 10% 20%, #00ffe0, transparent 25%),
+              radial-gradient(circle at 90% 80%, #0ff, transparent 20%),
+              radial-gradient(circle at 50% 50%, #1de9b6, transparent 30%);
+  animation: moveLights 20s linear infinite;
+  z-index: 0;
+  opacity: 0.2;
+}
+
+@keyframes moveLights {
+  0% { transform: translate(0%, 0%); }
+  50% { transform: translate(-25%, -25%); }
+  100% { transform: translate(0%, 0%); }
+}
+
+/* ..............................................Header button section........................................ */
+.LoginOpenAIButton {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 10; /* Increased z-index to ensure the button is on top */
+  pointer-events: all; /* Ensures the button is interactive */
+}
+
+.LoginOpenAIButton button {
+  padding: 10px;
+  border: none;
+  border-radius: 12px;
+  margin-left: 10px;
+  background: linear-gradient(135deg, #0fffd0, #062421);
+  color: #000;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer; /* Pointer cursor */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.LoginOpenAIButton button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px #d819c5;
+}
+
+/* ..............................................Card Wrap........................................ */
+.login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  z-index: 1;
+  position: relative;
+  animation: fadeIn 1.5s ease;
+}
+
+.login-card {
+  background: rgba(20, 20, 20, 0.85);
+  padding: 50px 40px;
+  border-radius: 20px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 40px rgba(0, 255, 170, 0.2);
+  max-width: 420px;
+  width: 90%;
+  text-align: center;
+  border: 1px solid rgba(0, 255, 170, 0.15);
+  animation: popIn 0.9s ease;
+}
+
+.login-card h1 {
+  font-size: 2rem;
+  margin-bottom: 30px;
+  color: white;
+}
+
+.login-card h1 span {
+  color: #0fffd0;
+}
+
+.login-card input {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  margin: 12px 0;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  outline: none;
+  transition: background 0.3s ease, box-shadow 0.3s;
+}
+
+.login-card input:focus {
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 12px rgba(0, 255, 170, 0.4);
+}
+
+.login-card button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 20px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #0fffd0, #0d9488);
+  color: #000;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-card button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px #0fffd0;
+}
+
+/* ...........Animation card background........... */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
