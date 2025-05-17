@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Study Notes Generator</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #000;
+      min-height: 100vh;
+      padding: 40px 20px;
+      overflow-y: auto; /* Allow vertical scrolling */
+      position: relative;
+      color: white;
+      display: flex;
+      justify-content: center;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 10% 20%, #00ffe0, transparent 25%),
+                  radial-gradient(circle at 90% 80%, #0ff, transparent 20%),
+                  radial-gradient(circle at 50% 50%, #1de9b6, transparent 30%);
+      background-repeat: no-repeat;
+      animation: moveLights 20s linear infinite;
+      z-index: 0;
+      opacity: 0.2;
+    }
+
+    @keyframes moveLights {
+      0% { transform: translate(0%, 0%); }
+      50% { transform: translate(-25%, -25%); }
+      100% { transform: translate(0%, 0%); }
+    }
+
+    .qa-box {
+      position: relative;
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 255, 200, 0.15);
+      max-width: 500px; /* Smaller card size */
+      width: 100%;
+      padding: 30px;
+      text-align: center;
+      border-radius: 16px;
+      min-height: 400px; /* Smaller height */
+    }
+
+    h1 {
+      color: #0fffd0;
+      margin-bottom: 20px;
+      font-size: 1.8rem;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      font-size: 1rem;
+      margin-bottom: 20px;
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    textarea::placeholder {
+      color: #aaa;
+    }
+
+    button {
+      padding: 12px 25px;
+      background: linear-gradient(135deg, #0fffd0, #0d9488);
+      color: #000;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+    }
+
+    .answer-box {
+      max-height: 300px; /* Limit the height of the answer box */
+      overflow-y: auto; /* Enable vertical scrolling inside the box */
+      opacity: 0;
+      margin-top: 20px;
+      transition: all 0.6s ease;
+      text-align: left;
+      color: #ddd;
+      background: rgba(255,255,255,0.05);
+      padding: 0 20px;
+      border-radius: 12px;
+      white-space: pre-wrap;
+    }
+
+    .answer-box.show {
+      padding: 20px;
+      opacity: 1;
+    }
+
+    .download-btns {
+      margin-top: 20px;
+    }
+
+    .download-btns button {
+      margin: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="qa-box">
+    <h1>📚 Study Notes Generator</h1>
+    <textarea id="topicInput" placeholder="Enter the topic you want to study..."></textarea>
+    <button onclick="generateNotes()">Generate Notes</button>
+    <div class="answer-box" id="notesOutput">Notes will appear here...</div>
+
+    <div class="download-btns">
+      <button onclick="downloadText()">Download as Text</button>
+      <button onclick="downloadPDF()">Download as PDF</button>
+    </div>
+  </div>
+
+  <script>
+    async function generateNotes() {
+      const topic = document.getElementById('topicInput').value.trim();
+      const outputBox = document.getElementById('notesOutput');
+      outputBox.classList.remove('show');
+
+      if (!topic) {
+        outputBox.innerHTML = "❗ Please enter a topic.";
+        outputBox.classList.add('show');
+        return;
+      }
+
+      outputBox.innerHTML = "⏳ Generating study notes...";
+      outputBox.classList.add('show');
+
+      const response = await fetch('/studynotes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ topic })
+      });
+
+      const data = await response.json();
+
+      setTimeout(() => {
+        outputBox.innerHTML = formatMarkdown(data.answer || "❌ Error generating notes.");
+        outputBox.classList.add('show');
+      }, 300);
+    }
+
+    function formatMarkdown(text) {
+      return text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') 
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')             
+        .replace(/\n/g, '<br>');                           
+    }
+
+    function downloadText() {
+      const notes = document.getElementById('notesOutput').innerText;
+      const blob = new Blob([notes], { type: 'text/plain' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'study_notes.txt';
+      link.click();
+    }
+
+    function downloadPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      const notes = document.getElementById('notesOutput').innerText;
+
+      doc.text(notes, 10, 10);
+      doc.save('study_notes.pdf');
+    }
+  </script>
+</body>
+</html>

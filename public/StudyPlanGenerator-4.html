@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Study Plan Generator</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #000;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px 20px;
+      position: relative;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 10% 20%, #00ffe0, transparent 25%),
+                  radial-gradient(circle at 90% 80%, #0ff, transparent 20%),
+                  radial-gradient(circle at 50% 50%, #1de9b6, transparent 30%);
+      background-repeat: no-repeat;
+      animation: moveLights 20s linear infinite;
+      z-index: 0;
+      opacity: 0.2;
+    }
+
+    @keyframes moveLights {
+      0% { transform: translate(0%, 0%); }
+      50% { transform: translate(-25%, -25%); }
+      100% { transform: translate(0%, 0%); }
+    }
+
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 10;
+      padding: 10px 16px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 6px;
+      background: #0fffd0;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,255,255,0.2);
+      transition: background 0.3s;
+    }
+
+    .back-button:hover {
+      background: #0d9488;
+    }
+
+    .planner {
+      position: relative;
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 255, 200, 0.15);
+      max-width: 850px;
+      width: 100%;
+      padding: 30px;
+      color: white;
+      text-align: center;
+    }
+
+    h1 {
+      color: #0fffd0;
+      margin-bottom: 20px;
+      font-size: 2rem;
+      font-weight: bold;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      border: none;
+      font-size: 1rem;
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+    }
+
+    textarea::placeholder,
+    input::placeholder {
+      color: #aaa;
+    }
+
+    button {
+      padding: 12px 25px;
+      background: linear-gradient(135deg, #0fffd0, #0d9488);
+      color: #000;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      margin: 8px;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+    }
+
+    .output-plan {
+      margin-top: 25px;
+      text-align: left;
+      color: #ddd;
+      background: rgba(255,255,255,0.05);
+      padding: 20px;
+      border-radius: 12px;
+      white-space: pre-wrap;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+
+    .download-buttons {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Back Button -->
+  <button class="back-button" onclick="history.back()">← Back</button>
+
+  <div class="planner">
+    <h1>📅 Study Plan Generator</h1>
+    <input type="text" id="subject" placeholder="Enter Subject Name" />
+    <textarea id="topics" placeholder="Enter Topics (one per line)"></textarea>
+    <input type="date" id="examDate" />
+    <input type="number" id="hours" placeholder="Daily Study Hours" />
+    <button onclick="generatePlan()">Generate Plan</button>
+
+    <div class="output-plan" id="planOutput">Your study plan will appear here...</div>
+
+    <div class="download-buttons">
+      <button onclick="downloadPlan('txt')">📄 Download .txt</button>
+      <button onclick="downloadPlan('md')">📝 Download .md</button>
+    </div>
+  </div>
+
+  <script>
+    function generatePlan() {
+      const subject = document.getElementById('subject').value.trim();
+      const topics = document.getElementById('topics').value.trim();
+      const examDate = document.getElementById('examDate').value;
+      const hoursPerDay = parseFloat(document.getElementById('hours').value);
+      const output = document.getElementById('planOutput');
+
+      if (!subject || !topics || !examDate || isNaN(hoursPerDay) || hoursPerDay <= 0) {
+        output.innerText = "❗ Please fill all fields correctly.";
+        return;
+      }
+
+      fetch('/StudyPlanGenerator', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          SubjectName: subject,
+          Topic: topics,
+          Date: examDate,
+          DailyStudyHRS: hoursPerDay
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log("Server response:", data);  
+        output.innerHTML = formatMarkdown(data.answer) || "✅ Plan generated successfully.";
+      })
+      .catch(error => {
+        console.error("❗ Error:", error);
+        output.innerText = "❗ Failed to generate study plan.";
+      });
+    }
+
+    function downloadPlan(type) {
+      const text = document.getElementById('planOutput').innerText;
+      const blob = new Blob([text], { type: 'text/plain' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = type === 'md' ? 'StudyPlan.md' : 'StudyPlan.txt';
+      a.click();
+    }
+
+    function formatMarkdown(text) {
+      return text
+        .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')  
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')            
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')                        
+        .replace(/\n/g, '<br>');                                     
+    }
+  </script>
+</body>
+</html>

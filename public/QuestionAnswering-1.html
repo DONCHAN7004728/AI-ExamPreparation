@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Question Answering</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #000;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 20px;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 10% 20%, #00ffe0, transparent 25%),
+                  radial-gradient(circle at 90% 80%, #0ff, transparent 20%),
+                  radial-gradient(circle at 50% 50%, #1de9b6, transparent 30%);
+      background-repeat: no-repeat;
+      animation: moveLights 20s linear infinite;
+      z-index: 0;
+      opacity: 0.2;
+    }
+
+    @keyframes moveLights {
+      0% { transform: translate(0%, 0%); }
+      50% { transform: translate(-25%, -25%); }
+      100% { transform: translate(0%, 0%); }
+    }
+
+    .qa-box {
+      position: relative;
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 255, 200, 0.15);
+      max-width: 700px;
+      width: 100%;
+      padding: 30px;
+      color: white;
+      text-align: center;
+    }
+
+    h1 {
+      color: #0fffd0;
+      margin-bottom: 25px;
+      font-size: 2rem;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 15px;
+      border-radius: 10px;
+      border: none;
+      resize: none;
+      min-height: 100px;
+      font-size: 1rem;
+      margin-bottom: 20px;
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+    }
+
+    textarea::placeholder {
+      color: #aaa;
+    }
+
+    button {
+      padding: 12px 25px;
+      background: linear-gradient(135deg, #0fffd0, #0d9488);
+      color: #000;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      margin: 5px;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+    }
+
+    .answer-box {
+      margin-top: 25px;
+      text-align: left;
+      color: #ddd;
+      background: rgba(255,255,255,0.05);
+      padding: 20px;
+      border-radius: 12px;
+      white-space: pre-wrap;
+      max-height: 300px;
+      overflow-y: auto;
+      transition: max-height 0.5s ease-out;
+      font-family: 'Courier New', monospace;
+    }
+
+    .answer-box pre {
+      background-color: rgba(255,255,255,0.08);
+      padding: 10px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin-top: 10px;
+    }
+
+    .answer-box code {
+      color: #00ffe0;
+    }
+
+    .answer-box strong {
+      color: #ffffff;
+    }
+
+    .answer-box.show {
+      max-height: 500px;
+    }
+  </style>
+</head>
+<body>
+  <div class="qa-box">
+    <h1>📝 Ask Your Question</h1>
+    <textarea id="context" placeholder="Context (optional)"></textarea>
+    <textarea id="questionInput" placeholder="Type your question here..."></textarea>
+    <br />
+    <button onclick="askQuestion()">Generate Answer</button>
+    <div class="answer-box show" id="answerBox">Answer will appear here...</div>
+    <br /><br />
+    <button onclick="downloadText()">📄 Download as .txt</button>
+    <button onclick="downloadMarkdown()">📘 Download as .md</button>
+  </div>
+
+  <script>
+    function formatMarkdown(text) {
+      return text
+        .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')  // code block
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')            // bold
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')                        // italic
+        .replace(/\n/g, '<br>');                                     // line break
+    }
+
+    async function askQuestion() {
+      const question = document.getElementById('questionInput').value.trim();
+      const context = document.getElementById('context').value.trim();
+      const answerBox = document.getElementById('answerBox');
+
+      if (!question) {
+        answerBox.innerText = "❗ Please enter a question first.";
+        answerBox.classList.remove('show');
+        return;
+      }
+
+      answerBox.innerText = "⏳ Generating answer...";
+      answerBox.classList.add('show');
+
+      try {
+        const res = await fetch('/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question, context })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          const markdown = `✅ Answer to your question:\n**"${question}"**\n\n${data.answer}`;
+          answerBox.innerHTML = formatMarkdown(markdown);
+        } else {
+          answerBox.innerText = "❗ There was an error processing your request.";
+        }
+      } catch (error) {
+        answerBox.innerText = "❗ Failed to connect to the server.";
+      }
+    }
+
+    function downloadText() {
+      const answerText = document.getElementById('answerBox').innerText;
+      const blob = new Blob([answerText], { type: 'text/plain' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'answer.txt';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function downloadMarkdown() {
+      const answerText = document.getElementById('answerBox').innerText;
+      const markdown = answerText.replace(/✅|❗|⏳/g, '');
+      const blob = new Blob([markdown], { type: 'text/markdown' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'answer.md';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+</body>
+</html>

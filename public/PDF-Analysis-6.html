@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>📄 PDF Analysis</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #000;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 20px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 10% 20%, #ff4081, transparent 25%),
+                  radial-gradient(circle at 90% 80%, #ff80ab, transparent 20%),
+                  radial-gradient(circle at 50% 50%, #ff79c6, transparent 30%);
+      background-repeat: no-repeat;
+      animation: moveLights 20s linear infinite;
+      z-index: 0;
+      opacity: 0.2;
+    }
+
+    @keyframes moveLights {
+      0% { transform: translate(0%, 0%); }
+      50% { transform: translate(-25%, -25%); }
+      100% { transform: translate(0%, 0%); }
+    }
+
+    .pdf-upload-container {
+      position: relative;
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 255, 200, 0.15);
+      max-width: 800px;
+      width: 100%;
+      padding: 30px;
+      color: white;
+      text-align: center;
+    }
+
+    h1 {
+      color: #ff79c6;
+      margin-bottom: 20px;
+      font-size: 2rem;
+    }
+
+    .upload-area {
+      border: 2px dashed #ff79c6;
+      padding: 40px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .upload-area:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .upload-area p {
+      margin-bottom: 10px;
+      color: #ddd;
+      font-size: 1.1rem;
+    }
+
+    .upload-area span {
+      color: #ff79c6;
+      font-weight: bold;
+    }
+
+    .file-name {
+      margin-top: 20px;
+      color: #aaa;
+    }
+
+    .button {
+      padding: 12px 25px;
+      background: linear-gradient(135deg, #ff4081, #ff79c6);
+      color: #000;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: transform 0.3s ease;
+    }
+
+    .button:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="pdf-upload-container">
+    <h1>📄 PDF Analysis</h1>
+    <p>Upload and analyze your study materials with AI assistance.</p>
+
+    <div id="uploadArea" class="upload-area" onclick="document.getElementById('fileInput').click();">
+      <p>📄 Upload PDF:</p>
+      <p><span>No file chosen</span></p>
+      <p>Drag and drop file here</p>
+      <p>Limit 200MB per file • PDF</p>
+      <input type="file" id="fileInput" accept="application/pdf" style="display: none;" onchange="updateFileName()" />
+    </div>
+
+    <div id="fileName" class="file-name"></div>
+
+    <button class="button" onclick="analyzePDF()">Analyze PDF</button>
+  </div>
+
+  <script>
+    function updateFileName() {
+      const fileInput = document.getElementById('fileInput');
+      const fileName = document.getElementById('fileName');
+      const file = fileInput.files[0];
+
+      if (file) {
+        fileName.textContent = `Selected file: ${file.name}`;
+      }
+    }
+
+    function analyzePDF() {
+      const fileInput = document.getElementById('fileInput');
+      if (!fileInput.files.length) {
+        alert('❗ Please upload a PDF file first.');
+        return;
+      }
+
+      const file = fileInput.files[0];
+      alert(`🔍 Analyzing PDF: ${file.name}`);
+    }
+
+    const uploadArea = document.getElementById('uploadArea');
+    uploadArea.ondragover = (event) => event.preventDefault();
+    uploadArea.ondrop = (event) => {
+      event.preventDefault();
+      const file = event.dataTransfer.files[0];
+      document.getElementById('fileInput').files = event.dataTransfer.files;
+      updateFileName();
+    };
+  </script>
+</body>
+</html>

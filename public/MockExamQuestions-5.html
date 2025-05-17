@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>📝 Mock Exam Questions</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #000;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 20px;
+      position: relative;
+      color: white;
+    }
+    body::before {
+      content: '';
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 10% 20%, #ff4081, transparent 25%),
+                  radial-gradient(circle at 90% 80%, #ff80ab, transparent 20%),
+                  radial-gradient(circle at 50% 50%, #ff79c6, transparent 30%);
+      animation: moveLights 20s linear infinite;
+      z-index: 0;
+      opacity: 0.2;
+    }
+    @keyframes moveLights {
+      0% { transform: translate(0%, 0%); }
+      50% { transform: translate(-25%, -25%); }
+      100% { transform: translate(0%, 0%); }
+    }
+    .mock-exam {
+      position: relative;
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(255, 105, 180, 0.15);
+      max-width: 800px;
+      width: 100%;
+      padding: 30px;
+    }
+    h1 {
+      color: #ff79c6;
+      margin-bottom: 20px;
+      font-size: 2rem;
+      text-align: center;
+    }
+    .input-field, select, textarea {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      margin-bottom: 15px;
+      font-size: 1rem;
+      background: rgba(255, 255, 255, 0.07);
+      color: #fff;
+    }
+    textarea { resize: vertical; }
+    .input-field::placeholder, textarea::placeholder {
+      color: #bbb;
+    }
+    option {
+      color: #000;
+    }
+    button {
+      padding: 12px 25px;
+      background: linear-gradient(135deg, #ff4081, #ff79c6);
+      color: #000;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      width: 100%;
+      margin-top: 10px;
+    }
+    button:hover:not(:disabled) {
+      transform: scale(1.03);
+    }
+    button:disabled {
+      background: #555;
+      cursor: not-allowed;
+      transform: none;
+      color: #aaa;
+    }
+    .output-questions {
+      margin-top: 25px;
+      text-align: left;
+      color: #ddd;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 20px;
+      border-radius: 12px;
+      max-height: 400px;
+      overflow-y: auto;
+      font-family: 'Courier New', monospace;
+      white-space: pre-wrap;
+    }
+    .output-questions pre {
+      background-color: rgba(255,255,255,0.08);
+      padding: 10px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin-top: 10px;
+    }
+    /* Container for download buttons */
+    .download-buttons {
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+    }
+    .download-buttons button {
+      width: auto;
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="mock-exam">
+    <h1>📝 Mock Exam Questions</h1>
+    <input id="subject" class="input-field" type="text" placeholder="📚 Subject (e.g. Chemistry)" />
+    <textarea id="topics" rows="4" class="input-field" placeholder="📝 Topics (one per line)"></textarea>
+
+    <select id="difficulty">
+      <option value="Easy">Easy</option>
+      <option value="Medium" selected>Medium</option>
+      <option value="Hard">Hard</option>
+    </select>
+
+    <select id="questionType">
+      <option value="Multiple Choice">Multiple Choice</option>
+      <option value="Short Answer">Short Answer</option>
+      <option value="Long Answer">Long Answer</option>
+    </select>
+
+    <select id="numQuestions"></select>
+
+    <button onclick="generateQuestions()">🎯 Generate Questions</button>
+
+    <div class="output-questions" id="questionsOutput">Your generated questions will appear here...</div>
+
+    <div class="download-buttons">
+      <button id="downloadTxtBtn" disabled>⬇️ Download TXT</button>
+      <button id="downloadPdfBtn" disabled>⬇️ Download PDF</button>
+    </div>
+  </div>
+
+  <!-- jsPDF CDN for PDF generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <script>
+    // Populate number of questions dropdown
+    const numSelect = document.getElementById('numQuestions');
+    for (let i = 1; i <= 20; i++) {
+      const option = document.createElement("option");
+      option.value = i;
+      option.textContent = i;
+      numSelect.appendChild(option);
+    }
+
+    // Markdown formatter function
+    function formatMarkdown(text) {
+      return text
+        .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')  // code block
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')            // bold
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')                        // italic
+        .replace(/\n/g, '<br>');                                     // line break
+    }
+
+    const downloadTxtBtn = document.getElementById('downloadTxtBtn');
+    const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+    const outputDiv = document.getElementById('questionsOutput');
+
+    function toggleDownloadButtons(enabled) {
+      downloadTxtBtn.disabled = !enabled;
+      downloadPdfBtn.disabled = !enabled;
+    }
+
+    function getPlainTextFromOutput() {
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = outputDiv.innerHTML;
+      return tempDiv.textContent || tempDiv.innerText || "";
+    }
+
+    // Download TXT
+    downloadTxtBtn.onclick = () => {
+      const text = getPlainTextFromOutput();
+      const blob = new Blob([text], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'mock_exam_questions.txt';
+      a.click();
+      URL.revokeObjectURL(url);
+    };
+
+    // Download PDF using jsPDF
+    downloadPdfBtn.onclick = () => {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      const text = getPlainTextFromOutput();
+
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const margin = 10;
+      const maxLineWidth = pageWidth - margin * 2;
+
+      const lines = doc.splitTextToSize(text, maxLineWidth);
+
+      doc.text(lines, margin, 20);
+      doc.save('mock_exam_questions.pdf');
+    };
+
+    // Generate questions function
+    async function generateQuestions() {
+      const subject = document.getElementById('subject').value.trim();
+      const topics = document.getElementById('topics').value.trim().split('\n').filter(Boolean);
+      const difficulty = document.getElementById('difficulty').value;
+      const questionType = document.getElementById('questionType').value;
+      const numQuestions = parseInt(document.getElementById('numQuestions').value);
+
+      if (!subject || topics.length === 0) {
+        outputDiv.innerText = "❗ Please enter a subject and at least one topic.";
+        toggleDownloadButtons(false);
+        return;
+      }
+
+      const data = { subject, topics, difficulty, questionType, numQuestions };
+
+      outputDiv.innerText = "⏳ Generating questions...";
+      toggleDownloadButtons(false);
+
+      try {
+        const response = await fetch("/MockExamQuestions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          outputDiv.innerHTML = "<strong>✅ Generated Questions:</strong><br><br>" + formatMarkdown(result.output);
+          toggleDownloadButtons(true);
+        } else {
+          outputDiv.innerText = "❌ Error: " + (result.message || "Unknown error.");
+          toggleDownloadButtons(false);
+        }
+      } catch (err) {
+        outputDiv.innerText = "❌ Failed to generate questions. Server error.";
+        toggleDownloadButtons(false);
+        console.error(err);
+      }
+    }
+  </script>
+</body>
+</html>

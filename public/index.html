@@ -2,45 +2,50 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login-AIBot</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
   <div class="LoginOpenAIButton">
-    <button onclick="window.location.href='https://openai.com/index/openai-api/'" id="LoginOpenAi">GetAPI-Key</button>
-    <button onclick="window.location.href='/viewdetails'" id="LoginDetails">LoginDetails</button>
+    <button onclick="window.location.href='https://platform.openai.com/account/api-keys'" id="LoginOpenAi">Get API Key</button>
+    <button onclick="window.location.href='/viewdetails'" id="LoginDetails">Login Details</button>
   </div>
 
   <div class="login-wrapper">
     <div class="login-card">
       <h1>🚀 Welcome to <span>AI-Bot</span></h1>
       <form id="loginForm">
-        <input type="email" id="email" placeholder="📧 Gmail" required />
-        <input type="password" id="password" placeholder="🔒 Password" required />
-        <button type="submit">Login</button>
-        <button type="button" onclick="window.location.href='/SignUP'">SignUp</button>
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" placeholder="Your Name" required />
+
+        <label for="apikey">API Key</label>
+        <input type="text" id="apikey" name="apikey" placeholder="🔑 Enter your API Key" required />
+
+        <div class="button-group">
+          <button type="submit">Login</button>
+        </div>
       </form>
       <p id="error-message" style="color: red;"></p>
     </div>
   </div>
 
   <script>
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
+    document.getElementById('loginForm').addEventListener('submit', function (e) {
       e.preventDefault();
-
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
+      const name = document.getElementById('name').value;
+      const apikey = document.getElementById('apikey').value;
 
       fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ name, apikey })
       })
-      .then(response => response.json())
+      .then(res => res.json())
       .then(data => {
-        if (data.redirect) {
-          window.location.href = data.redirect;
+        if (data.message === "Login successful!") {
+          alert("✅ User successfully logged in");
+          window.location.href = "SoftwareSelect.html";
         } else {
           document.getElementById('error-message').innerText = data.message;
         }
