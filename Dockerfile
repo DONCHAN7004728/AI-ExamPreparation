@@ -1,32 +1,34 @@
-# Base image with Node.js and Python
+# Use Node.js as the base image (includes npm)
 FROM node:18
 
-# Install system dependencies: Python, pip, venv, and build tools
+# Install Python 3, pip, and venv
 RUN apt-get update && \
-    apt-get install -y python3 python3-pip python3-venv build-essential && \
+    apt-get install -y python3 python3-pip python3-venv && \
     apt-get clean
 
 # Set the working directory
 WORKDIR /app
 
-# Copy Node.js files and install dependencies
+# Copy Node.js files and install npm dependencies
 COPY package*.json ./
 RUN npm install
 
-# Copy Python requirements and set up virtual environment
+# Copy Python requirements
 COPY requirements.txt ./
+
+# Create Python virtual environment and install dependencies inside it
 RUN python3 -m venv /opt/venv && \
-    . /opt/venv/bin/activate && \
-    pip install --no-cache-dir -r requirements.txt
+    /opt/venv/bin/pip install --upgrade pip && \
+    /opt/venv/bin/pip install --no-cache-dir -r requirements.txt
 
 # Add the virtual environment to PATH
 ENV PATH="/opt/venv/bin:$PATH"
 
-# Copy the rest of the application code
+# Copy the rest of the project files
 COPY . .
 
-# Expose port if your app runs on a specific one (optional)
+# Expose your app port (optional)
 EXPOSE 3000
 
-# Start the Node.js server
+# Start your Node.js app
 CMD ["node", "server.js"]
