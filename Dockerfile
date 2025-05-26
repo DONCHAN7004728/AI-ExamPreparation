@@ -1,25 +1,33 @@
 FROM node:18
 
-# Install Python and pip
-RUN apt-get update && apt-get install -y python3 python3-pip && \
-    ln -s /usr/bin/python3 /usr/bin/python
 
-# Set working directory
+RUN apt-get update && \
+    apt-get install -y python3 python3-pip python3-venv && \
+    apt-get clean
+
+
 WORKDIR /app
 
-# Install Node.js dependencies
+
 COPY package*.json ./
 RUN npm install
 
-# Install Python dependencies
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the app code
+COPY requirements.txt ./
+
+
+RUN python3 -m venv /opt/venv && \
+    /opt/venv/bin/pip install --upgrade pip && \
+    /opt/venv/bin/pip install --no-cache-dir -r requirements.txt
+
+
+ENV PATH="/opt/venv/bin:$PATH"
+
+
 COPY . .
 
-# Expose the server port
-EXPOSE 5000
 
-# Start the server
+EXPOSE 3000
+
+
 CMD ["node", "server.js"]
