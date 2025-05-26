@@ -1,10 +1,10 @@
-# 🎓 ExamPrepAI – 
+# 🎓 ExamPrepAI....... 
 Your Smart Study Assistant
 ExamPrepAI is an AI-powered exam preparation tool designed to help students study smarter and faster.
 Powered by Gemini language models, this app allows you to generate concise notes, answer questions, create study plans, and practice with mock exams — all in one place.
 
-## 🚀 Features
-📄 PDF Analysis
+## 🚀 Features.....
+#### 📄 PDF Analysis
 → Upload PDFs and extract key concepts instantly from your textbooks or notes.
 
 #### ❓ Question Answering
@@ -22,7 +22,7 @@ Powered by Gemini language models, this app allows you to generate concise notes
 #### 🎓 Mock Questions
 → Automatically generate and answer practice exam questions to test your knowledge.
 
-## 🔑 Usage Instructions
+## 🔑 Usage Instructions......
 #### Step 1: 
           Generate your Gemini API Key
           (Instructions provided in the repository)
@@ -34,7 +34,7 @@ Powered by Gemini language models, this app allows you to generate concise notes
           Start using all the features:
           Upload PDFs ➜ Ask Questions ➜ Create Notes ➜ Summarize ➜ Build Study Plans ➜ Practice Mock Tests
 
-## ⚠️ Disclaimer
+## ⚠️ Disclaimer......
 This tool is intended to assist in studying.
 Please verify the accuracy of any AI-generated content before relying on it for academic purposes.
 
