@@ -1,4 +1,4 @@
-🎓 ExamPrepAI – Your Smart Study Assistant
+##🎓 ExamPrepAI – Your Smart Study Assistant
 ExamPrepAI is an AI-powered exam preparation tool designed to help students study smarter and faster. Powered by Gemini language models, this app lets you generate concise notes, answer questions, create study plans, and even practice with mock exams — all in one place.
 
 🚀 Features
