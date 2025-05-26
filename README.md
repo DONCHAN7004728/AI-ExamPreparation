@@ -28,8 +28,7 @@ Whether you're revising for exams or reviewing your notes, ExamPrepAI is here to
 
 ## 🔑 Usage Instructions......
 #### Step 1: 
-          Generate your Gemini API Key
-          (Instructions provided in the repository)
+          Generate your Gemini API Key (The API key will look something like this : AhjgsaGbhDonchanTTUmbasbhaY)
 
 #### Step 2: 
           Login to ExamPrepAI using your credentials
