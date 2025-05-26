@@ -19,7 +19,7 @@ Powered by Gemini language models, this app allows you to generate concise notes
 ##### 📅 Study Plan Creator
 → Generate personalized study schedules based on your time and goals.
 
-####🎓 Mock Questions
+#### 🎓 Mock Questions
 → Automatically generate and answer practice exam questions to test your knowledge.
 
 ## 🔑 Usage Instructions
