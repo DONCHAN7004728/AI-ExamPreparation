@@ -4,6 +4,7 @@ ExamPrepAI is an AI-powered exam preparation tool designed to help students stud
 Powered by Gemini language models, this app allows you to generate concise notes, answer questions, create study plans, and practice with mock exams — all in one place.
 
 ## 📘 About.....
+Website : <a href="https://example.com" style="color: rgb(2, 154, 65); text-decoration: none; font-size: 20px;">ExamPrepAI</a>
 ExamPrepAI is built to empower students and self-learners by making study preparation faster, easier, and smarter with the help of AI.
 Whether you're revising for exams or reviewing your notes, ExamPrepAI is here to support your learning journey.
 
