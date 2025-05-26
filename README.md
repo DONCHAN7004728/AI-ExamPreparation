@@ -10,8 +10,7 @@ ExamPrepAI is built to empower students and self-learners by making study prepar
 Whether you're revising for exams or reviewing your notes, ExamPrepAI is here to support your learning journey.
 
 ## 📘 Website
-# <a href="http://ai-exampreparation-production.up.railway.app" style="color: rgb(2, 154, 65); text-decoration: none; font-size: 90px;">ExamPrepAI</a>
-
+# <a href="http://ai-exampreparation-production.up.railway.app" style="color: rgb(2, 154, 65); text-decoration: none; font-size: 90px;">ExamPrepAI</a> <br/>
 ## 🚀 Features.....
 #### 📄 PDF Analysis
 → Upload PDFs and extract key concepts instantly from your textbooks or notes.
